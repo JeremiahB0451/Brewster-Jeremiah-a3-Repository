@@ -31,6 +31,25 @@ namespace MohawkGame2D
                 }
             }
 
+            //update every existing car
+            //must be after intersections so that they are drawn on top
+            for (int i = 0; i < roads.Length; i++) { //for each road
+                if (roads[i] != null) {
+                    for (int j = 0; j < roads[i].numLanes; j++) { //for each lane
+                        for (int k = 0; k < roads[i].lanes[j].Length; k++) { //for each car
+                            Car carRef = roads[i].lanes[j][k];
+                            if (carRef != null) {
+                                carRef.Update();
+                                //if the car is offscreen, delete it
+                                if (carRef.position.X > Window.Width + 50 || carRef.position.X < -50 || carRef.position.Y > Window.Height + 50 || carRef.position.Y < -50) {
+                                    carRef = null;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             //build a road when the mouse is dragged
             if (Input.IsMouseButtonPressed(MouseButton.Left)) {
                 startPos = Input.GetMousePosition(); //when first pressed, store the current mouse position
