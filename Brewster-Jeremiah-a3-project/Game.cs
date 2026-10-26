@@ -12,7 +12,9 @@ namespace MohawkGame2D
     public class Game
     {
         Road[] roads = new Road[20];
-        Vector2 startPos;
+        Intersection[] intersections = new Intersection[60];
+        Vector2 mouseStartPos;
+        Road roadRef;
 
         public void Setup()
         {
@@ -28,6 +30,13 @@ namespace MohawkGame2D
             for (int i = 0; i < roads.Length; i++) {
                 if (roads[i] != null) {
                     roads[i].Update();
+                }
+            }
+
+            //update every existing intersection
+            for (int i = 0; i < intersections.Length; i++) {
+                if (intersections[i] != null) {
+                    intersections[i].Update();
                 }
             }
 
@@ -52,20 +61,36 @@ namespace MohawkGame2D
 
             //build a road when the mouse is dragged
             if (Input.IsMouseButtonPressed(MouseButton.Left)) {
-                startPos = Input.GetMousePosition(); //when first pressed, store the current mouse position
+                mouseStartPos = Input.GetMousePosition(); //when first pressed, store the current mouse position
             }
             if (Input.IsMouseButtonDown(MouseButton.Left)) {
-                Arrow(startPos, Input.GetMousePosition()); //as long as the mouse is held down, draw the arrow indicatior
+                Arrow(mouseStartPos, Input.GetMousePosition()); //as long as the mouse is held down, draw the arrow indicatior
             }
             if (Input.IsMouseButtonReleased(MouseButton.Left)) {
                 //when realeased, create a road
                 //use Arrow() to determine the direction of the new road
-                string direction = Arrow(startPos, Input.GetMousePosition());
+                string direction = Arrow(mouseStartPos, Input.GetMousePosition());
                 for (int i = 0; i < roads.Length; i++) {
                     //create a new road at the first avalable index in the array
                     if (roads[i] == null) {
-                        roads[i] = new Road(startPos, direction);
+                        roads[i] = new Road(mouseStartPos, direction);
+                        roadRef = roads[i];
                         break;
+                    }
+                }
+
+                //create intersections if nessisary
+                for (int i = 0; i < roads.Length; i++) {
+                    if (roads[i] != null) {
+                        if (roads[i].vertical != roadRef.vertical) { //check if they are perpindicular
+                            for (int j = 0; j < intersections.Length; j++) {
+                                //create a new intersection at the first avalable index in the array
+                                if (intersections[j] == null) {
+                                    intersections[j] = new Intersection(roads[i], roadRef);
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             }
