@@ -14,7 +14,8 @@ namespace MohawkGame2D
         Road[] roads = new Road[20];
         Intersection[] intersections = new Intersection[60];
         Vector2 mouseStartPos;
-        Road roadRef;
+        int roadRef;
+        float redXTimer = 0f;
 
         public void Setup()
         {
@@ -62,6 +63,7 @@ namespace MohawkGame2D
             //build a road when the mouse is dragged
             if (Input.IsMouseButtonPressed(MouseButton.Left)) {
                 mouseStartPos = Input.GetMousePosition(); //when first pressed, store the current mouse position
+                redXTimer = 0f;
             }
             if (Input.IsMouseButtonDown(MouseButton.Left)) {
                 Arrow(mouseStartPos, Input.GetMousePosition()); //as long as the mouse is held down, draw the arrow indicatior
@@ -74,25 +76,46 @@ namespace MohawkGame2D
                     //create a new road at the first avalable index in the array
                     if (roads[i] == null) {
                         roads[i] = new Road(mouseStartPos, direction);
-                        roadRef = roads[i];
+                        roadRef = i;
                         break;
+                    }
+                }
+
+                //check if it's too close to any parrallel roads
+                for (int i = 0; i < roads.Length; i++) {
+                    if (roads[i] != null && roads[i] != roads[roadRef]) {
+                        if (roads[i].vertical == roads[roadRef].vertical && MathF.Abs(roads[i].position - roads[roadRef].position) < 105f) {
+                            roads[roadRef] = null;
+                            redXTimer = 2f;
+                            break;
+                        }
                     }
                 }
 
                 //create intersections if nessisary
                 for (int i = 0; i < roads.Length; i++) {
-                    if (roads[i] != null) {
-                        if (roads[i].vertical != roadRef.vertical) { //check if they are perpindicular
+                    if (roads[i] != null && roads[roadRef] != null && roads[i] != roads[roadRef]) { //don't execute if the prevoius section deleted this road
+                        if (roads[i].vertical != roads[roadRef].vertical) { //check if they are perpindicular
                             for (int j = 0; j < intersections.Length; j++) {
                                 //create a new intersection at the first avalable index in the array
                                 if (intersections[j] == null) {
-                                    intersections[j] = new Intersection(roads[i], roadRef);
+                                    intersections[j] = new Intersection(roads[i], roads[roadRef]);
                                     break;
                                 }
                             }
                         }
                     }
                 }
+            }
+            
+            //draw a red x for a few seconds if the user tried to place a road too close to another
+            if (redXTimer > 0) {
+                redXTimer -= Time.DeltaTime;
+                //draw 2 lines to form the x
+                Draw.SetLineSize(5);
+                Draw.SetLineColor(Color.Red);
+                Draw.Line(mouseStartPos.X - 20, mouseStartPos.Y - 20, mouseStartPos.X + 20, mouseStartPos.Y + 20);
+                Draw.Line(mouseStartPos.X - 20, mouseStartPos.Y + 20, mouseStartPos.X + 20, mouseStartPos.Y - 20);
             }
         }
 

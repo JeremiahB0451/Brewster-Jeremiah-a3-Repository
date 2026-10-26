@@ -35,7 +35,7 @@ namespace MohawkGame2D
             height = roadHor.width;
 
             //draw the intersection
-            int crosswalkSize = 5;
+            int crosswalkSize = 3;
             Draw.SetLineSize(crosswalkSize);
             Draw.SetLineColor(Color.White);
             Draw.SetFillColor(Color.LightGray);
