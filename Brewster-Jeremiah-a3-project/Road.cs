@@ -76,6 +76,9 @@ namespace MohawkGame2D
                 if (spawnTimer >= spawnRate) {
                     //reset timer and spawn a car
                     spawnTimer = 0f;
+                    //random variation relitive to spawn rate
+                    float variation = spawnRate * 0.5f;
+                    spawnTimer += Random.Float(-variation, variation);
                     SpawnCar();
                 }
             }
