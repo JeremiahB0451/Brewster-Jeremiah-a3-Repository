@@ -42,6 +42,14 @@ namespace MohawkGame2D
             //increace the road length until it reaches the edge of the screen, then set 'building' to false
             if ((vertical && length < Window.Height) || (!vertical && length < Window.Width)) {
                 length += buildSpeed * Time.DeltaTime;
+                //if upgrading: show the smaller road still underneath
+                if (numLanes == 4) { 
+                    if (vertical) {
+                        DrawRoad(0, Window.Height, width/2, 2);
+                    } else { 
+                        DrawRoad(0, Window.Width, width/2, 2);
+                    }
+                }
             } else {
                 building = false;
             }
@@ -96,6 +104,28 @@ namespace MohawkGame2D
             Draw.SetLineSize(2);
             Draw.SetLineColor(Color.Yellow);
             Draw.LineSharp(point1, point2);
+
+            //draw dashed lane lines if nessisary
+            if (numLanes == 4) {
+                Draw.SetLineSize(2);
+                Draw.SetLineColor(Color.White);
+                float lineLength = 20f;
+                //2 sets of lines
+                for (int j = -1; j < 2; j+=2) { //j will only be -1 then 1; used to create 2 copies of the dashes on either side of the middle
+                    for (int i = (int)(lineLength/2); i < length - lineLength; i+=(int)(lineLength*2)) { //starts half a line from the edge; sepertates each line by a line length
+                        //MUST be seperate for each direction
+                        if (direction == "down") {
+                            Draw.LineSharp(point1.X + j * width / 4, point1.Y + i, point1.X + j * width / 4, point1.Y + i + lineLength);
+                        } else if (direction == "up") {
+                            Draw.LineSharp(point1.X + j * width / 4, point1.Y - i, point1.X + j * width / 4, point1.Y - i - lineLength);
+                        } else if (direction == "right") {
+                            Draw.LineSharp(point1.X + i, point1.Y + j * width / 4, point1.X + i + lineLength, point1.Y + j * width / 4);
+                        } else {
+                            Draw.LineSharp(point1.X - i, point1.Y + j * width / 4, point1.X - i - lineLength, point1.Y + j * width / 4);
+                        }
+                    }
+                }
+            }
         }
 
         //spawns a car in a random lane
@@ -150,6 +180,20 @@ namespace MohawkGame2D
                     lanes[laneNum][i] = new Car(this, carPos, carDirection);
                     break;
                 }
+            }
+        }
+
+        //changes the road from 2 lanes to 4 lanes
+        public void Upgrade() { 
+            if (numLanes == 2 && !building) { //don't do anything if it has already been upgraded or currectly building
+                numLanes = 4;
+                width *= 2;
+                //should result in a somewhat buiser road
+                speedLimit *= 1.5f;
+                spawnRate /= 3.5f;
+                //set the paramiters used for the building animation
+                building = true;
+                length = 0;
             }
         }
     }

@@ -80,7 +80,6 @@ namespace MohawkGame2D
                         break;
                     }
                 }
-
                 //check if it's too close to any parrallel roads
                 for (int i = 0; i < roads.Length; i++) {
                     if (roads[i] != null && roads[i] != roads[roadRef]) {
@@ -108,6 +107,21 @@ namespace MohawkGame2D
                 }
             }
             
+            //upgrade a road when right clicked
+            if (Input.IsMouseButtonPressed(MouseButton.Right)) { 
+                for (int i = 0; i < roads.Length; i++) { 
+                    if (roads[i] != null) {
+                        //check if the mouse is inside of any roads
+                        if (MathF.Abs(Input.GetMouseX() - roads[i].position) <= roads[i].width / 2 && roads[i].vertical) {
+                            roads[i].Upgrade();
+                            //vertical roads will be prioritized over horisontal
+                        } else if (MathF.Abs(Input.GetMouseY() - roads[i].position) <= roads[i].width / 2 && !roads[i].vertical) {
+                            roads[i].Upgrade();
+                        }
+                    }
+                }
+            }
+
             //draw a red x for a few seconds if the user tried to place a road too close to another
             if (redXTimer > 0) {
                 redXTimer -= Time.DeltaTime;

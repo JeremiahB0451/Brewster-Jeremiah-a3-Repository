@@ -12,7 +12,7 @@ namespace MohawkGame2D
         float width = 14f;
         string direction;
         float speed;
-        float acceleration = 10f;
+        float acceleration = 50f;
         float gap = 10f;
         public Road road;
         Color carColor;
