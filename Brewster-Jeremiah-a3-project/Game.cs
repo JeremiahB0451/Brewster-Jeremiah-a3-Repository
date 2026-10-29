@@ -60,6 +60,14 @@ namespace MohawkGame2D
                 }
             }
 
+            //draw the lights for every existing intersection
+            //so that they are above the cars
+            for (int i = 0; i < intersections.Length; i++) {
+                if (intersections[i] != null) {
+                    intersections[i].DrawLights();
+                }
+            }
+
             //build a road when the mouse is dragged
             if (Input.IsMouseButtonPressed(MouseButton.Left)) {
                 mouseStartPos = Input.GetMousePosition(); //when first pressed, store the current mouse position
@@ -99,6 +107,19 @@ namespace MohawkGame2D
                                 //create a new intersection at the first avalable index in the array
                                 if (intersections[j] == null) {
                                     intersections[j] = new Intersection(roads[i], roads[roadRef]);
+
+                                    //add a reference to the intersection in both roads
+                                    for (int k1 = 0; k1 < roads[i].intersections.Length; k1++) { 
+                                        if (roads[i].intersections[k1] == null) {
+                                            roads[i].intersections[k1] = intersections[j];
+                                        }
+                                    }
+                                    for (int k2 = 0; k2 < roads[i].intersections.Length; k2++) { 
+                                        if (roads[roadRef].intersections[k2] == null) {
+                                            roads[roadRef].intersections[k2] = intersections[j];
+                                        }
+                                    }
+
                                     break;
                                 }
                             }

@@ -9,9 +9,12 @@ namespace MohawkGame2D
     {
         public Road roadVert;
         public Road roadHor;
-        float width;
-        float height;
-        Vector2 position;
+        public float width;
+        public float height;
+        public Vector2 position;
+        public bool greenVert = true;
+        float changeRate = 10f; //in seconds
+        float changeTimer = 0f;
 
         public Intersection(Road road1, Road road2)
         {
@@ -34,12 +37,37 @@ namespace MohawkGame2D
             width = roadVert.width;
             height = roadHor.width;
 
+            //change the lights
+            changeTimer += Time.DeltaTime;
+            if (changeTimer >= changeRate) {
+                greenVert = !greenVert;
+                changeTimer = 0f;
+            }
+
             //draw the intersection
             int crosswalkSize = 3;
             Draw.SetLineSize(crosswalkSize);
             Draw.SetLineColor(Color.White);
             Draw.SetFillColor(Color.LightGray);
             Draw.Rectangle(position.X - width / 2, position.Y - height / 2, width, height);
+        }
+
+        //draw the lights
+        public void DrawLights() {
+            Draw.SetLineSize(0);
+            int transperency = 127;
+            float angle = 30f; //half the angle
+            Vector2 size = new Vector2(40, 40);
+            //vertical lights
+            if (greenVert) Draw.SetFillColor(0, 255, 0, transperency);
+            else Draw.SetFillColor(255, 0, 0, transperency);
+            Draw.Arc(new Vector2(position.X, position.Y - height / 2), size, 90 - angle, 90 + angle); //top
+            Draw.Arc(new Vector2(position.X, position.Y + height / 2), size, 270 - angle, 270 + angle); //bottom
+            //horisontal lights
+            if (!greenVert) Draw.SetFillColor(0, 255, 0, transperency);
+            else Draw.SetFillColor(255, 0, 0, transperency);
+            Draw.Arc(new Vector2(position.X - width / 2, position.Y), size, 0 - angle, 0 + angle); //left
+            Draw.Arc(new Vector2(position.X + width / 2, position.Y), size, 180 - angle, 180 + angle); //right
         }
     }
 }

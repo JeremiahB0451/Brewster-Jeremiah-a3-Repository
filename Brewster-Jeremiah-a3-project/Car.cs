@@ -10,10 +10,11 @@ namespace MohawkGame2D
         public Vector2 position;
         float length = 35f;
         float width = 14f;
-        string direction;
+        public string direction;
         float speed;
-        float acceleration = 50f;
-        float gap = 10f;
+        float acceleration = 150f;
+        public bool Stop = false;
+        float gap = 5f;
         public Road road;
         Color carColor;
         Color[] colorChoices = [Color.Black, Color.Blue, Color.Cyan, Color.Green, Color.Magenta, Color.Red, Color.White, Color.Yellow];
@@ -32,6 +33,19 @@ namespace MohawkGame2D
 
         public void Update()
         {
+            //slow down the car its supposed to stop
+            if (Stop && speed > 0) {
+                speed -= acceleration * Time.DeltaTime;
+            } else if (speed < road.speedLimit) { //bring it up to the speed limit
+                speed += acceleration * Time.DeltaTime;
+            }
+            //remove frame rounding errors
+            if (speed < 1) {
+                speed = 0f;
+            } else if (road.speedLimit - speed < 1) { //bring it up to the speed limit
+                speed = road.speedLimit;
+            }
+
             //move the car
             if (direction == "up") {
                 position.Y -= speed * Time.DeltaTime;
@@ -42,7 +56,7 @@ namespace MohawkGame2D
             } else {
                 position.X += speed * Time.DeltaTime;
             }
-            
+
             DrawCar();
         }
 
@@ -76,6 +90,15 @@ namespace MohawkGame2D
             Draw.SetLineSize(0);
             Draw.SetFillColor(carColor);
             Draw.Quad(point0, point1, point2, point3);
+        }
+
+        //finds the distance the car has to be away for it to stop
+        public float StopDistance() {
+            //use kinematics to detemine how far it travels before stopping
+            float displacement = MathF.Abs(-MathF.Pow(speed, 2)/(2 * acceleration));
+            //gap needs to be larger for starting the car to prevent stuttering
+            if (Stop) return displacement + length + gap;
+            else return displacement + length + gap;
         }
     }
 }

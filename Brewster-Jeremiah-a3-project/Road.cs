@@ -22,6 +22,9 @@ namespace MohawkGame2D
         //an array for each lane of cars
         public Car[][] lanes = [new Car[20], new Car[20], new Car[20], new Car[20]];
 
+        //references to all intersections on this road
+        public Intersection[] intersections = new Intersection[10];
+
         public Road(Vector2 position, string direction)
         {
             //determine if its horisontal or vertical to store either the x or y position
@@ -80,6 +83,66 @@ namespace MohawkGame2D
                     float variation = spawnRate * 0.5f;
                     spawnTimer += Random.Float(-variation, variation);
                     SpawnCar();
+                }
+            }
+
+            //check if each car should stop
+            for (int i = 0; i < lanes.Length; i++) { //every lane
+                for (int j = 0; j < lanes[i].Length; j++) { //every car
+                    Car carRef1 = lanes[i][j];
+                    bool stopped = false;
+                    if (carRef1 != null) { 
+                        for (int k = 0; k < lanes[i].Length; k++) { //every other car
+                            Car carRef2 = lanes[i][k];
+                            if (carRef2 != null && carRef2 != carRef1) {
+                                //get the x and y differences in their positions at once; only need to use one at a time
+                                Vector2 diff = carRef2.position - carRef1.position;
+                                if (carRef1.direction == "down" && diff.Y < carRef1.StopDistance() && diff.Y > 0) {
+                                    carRef1.Stop = true;
+                                    stopped = true;
+                                    break;
+                                } else if (carRef1.direction == "up" && diff.Y > -carRef1.StopDistance() && diff.Y < 0) {
+                                    carRef1.Stop = true;
+                                    stopped = true;
+                                    break;
+                                } else if (carRef1.direction == "left" && diff.X > -carRef1.StopDistance() && diff.X < 0) {
+                                    carRef1.Stop = true;
+                                    stopped = true;
+                                    break;
+                                } else if (carRef1.direction == "right" && diff.X < carRef1.StopDistance() && diff.X > 0) {
+                                    carRef1.Stop = true;
+                                    stopped = true;
+                                    break;
+                                } else {
+                                    carRef1.Stop = false;
+                                }
+                            }
+                        }
+                        //go to the next car to prevent the next section from starting this car if it was stopped
+                        if (stopped) continue;
+                        for (int k = 0; k < intersections.Length; k++) { //every intersection on this road
+                            Intersection intersectionRef = intersections[k];
+                            if (intersectionRef != null && intersectionRef.greenVert != vertical) { //only stop cars on the road where the light is red
+                                //get the x and y differences in their positions at once; only need to use one at a time
+                                Vector2 diff = intersectionRef.position - carRef1.position;
+                                if (carRef1.direction == "down" && diff.Y - intersectionRef.height/2 <= carRef1.StopDistance() && diff.Y >= intersectionRef.height/2 && diff.Y > 0) {
+                                    carRef1.Stop = true;
+                                    break;
+                                } else if (carRef1.direction == "up" && diff.Y + intersectionRef.height/2 >= -carRef1.StopDistance() && diff.Y >= intersectionRef.height/2 && diff.Y < 0) {
+                                    carRef1.Stop = true;
+                                    break;
+                                } else if (carRef1.direction == "left" && diff.X + intersectionRef.width/2 >= -carRef1.StopDistance() && diff.X >= intersectionRef.width/2 && diff.X < 0) {
+                                    carRef1.Stop = true;
+                                    break;
+                                } else if (carRef1.direction == "right" && diff.X - intersectionRef.width/2 <= carRef1.StopDistance() && diff.X >= intersectionRef.width/2 && diff.X > 0) {
+                                    carRef1.Stop = true;
+                                    break;
+                                } else {
+                                    carRef1.Stop = false;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
