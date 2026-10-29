@@ -12,7 +12,7 @@ namespace MohawkGame2D
         float width = 14f;
         public string direction;
         float speed;
-        float acceleration = 150f;
+        float acceleration = 100f;
         public bool Stop = false;
         float gap = 5f;
         public Road road;
@@ -36,7 +36,7 @@ namespace MohawkGame2D
             //slow down the car its supposed to stop
             if (Stop && speed > 0) {
                 speed -= acceleration * Time.DeltaTime;
-            } else if (speed < road.speedLimit) { //bring it up to the speed limit
+            } else if (!Stop && speed < road.speedLimit) { //bring it up to the speed limit
                 speed += acceleration * Time.DeltaTime;
             }
             //remove frame rounding errors
@@ -95,10 +95,8 @@ namespace MohawkGame2D
         //finds the distance the car has to be away for it to stop
         public float StopDistance() {
             //use kinematics to detemine how far it travels before stopping
-            float displacement = MathF.Abs(-MathF.Pow(speed, 2)/(2 * acceleration));
-            //gap needs to be larger for starting the car to prevent stuttering
-            if (Stop) return displacement + length + gap;
-            else return displacement + length + gap;
+            float displacement = MathF.Pow(speed, 2)/(2 * acceleration);
+            return displacement + length + gap;
         }
     }
 }

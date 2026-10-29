@@ -14,7 +14,7 @@ namespace MohawkGame2D
         public Vector2 position;
         public bool greenVert = true;
         float changeRate = 10f; //in seconds
-        float changeTimer = 0f;
+        public float changeTimer = 0f;
 
         public Intersection(Road road1, Road road2)
         {
@@ -59,12 +59,24 @@ namespace MohawkGame2D
             float angle = 30f; //half the angle
             Vector2 size = new Vector2(40, 40);
             //vertical lights
-            if (greenVert) Draw.SetFillColor(0, 255, 0, transperency);
+            if (greenVert) {
+                //green light
+                Draw.SetFillColor(0, 255, 0, transperency);
+                //yellow light
+                if (changeRate - changeTimer < 1) Draw.SetFillColor(255, 255, 0, transperency);
+            }
+            //red light
             else Draw.SetFillColor(255, 0, 0, transperency);
             Draw.Arc(new Vector2(position.X, position.Y - height / 2), size, 90 - angle, 90 + angle); //top
             Draw.Arc(new Vector2(position.X, position.Y + height / 2), size, 270 - angle, 270 + angle); //bottom
-            //horisontal lights
-            if (!greenVert) Draw.SetFillColor(0, 255, 0, transperency);
+            //horisontal lights; inverted color
+            if (!greenVert) {
+                //green light
+                Draw.SetFillColor(0, 255, 0, transperency);
+                //yellow light
+                if (changeRate - changeTimer < 1) Draw.SetFillColor(255, 255, 0, transperency);
+            }
+            //red light
             else Draw.SetFillColor(255, 0, 0, transperency);
             Draw.Arc(new Vector2(position.X - width / 2, position.Y), size, 0 - angle, 0 + angle); //left
             Draw.Arc(new Vector2(position.X + width / 2, position.Y), size, 180 - angle, 180 + angle); //right

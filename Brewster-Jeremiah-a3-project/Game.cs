@@ -143,6 +143,19 @@ namespace MohawkGame2D
                 }
             }
 
+            //change light when spacepar pressed
+            if (Input.IsKeyboardKeyPressed(KeyboardKey.Space)) { 
+                for (int i = 0; i < intersections.Length; i++) { 
+                    if (intersections[i] != null) {
+                        //check if the mouse is inside of any intersections
+                        if (Input.GetMouseX() > intersections[i].position.X - intersections[i].width/2 && Input.GetMouseX() < intersections[i].position.X + intersections[i].width/2 && Input.GetMouseY() > intersections[i].position.Y - intersections[i].height/2 && Input.GetMouseY() < intersections[i].position.X + intersections[i].height / 2) {
+                            intersections[i].greenVert = !intersections[i].greenVert;
+                            intersections[i].changeTimer = 0f;
+                        }
+                    }
+                }
+            }
+
             //draw a red x for a few seconds if the user tried to place a road too close to another
             if (redXTimer > 0) {
                 redXTimer -= Time.DeltaTime;

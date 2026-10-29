@@ -128,10 +128,10 @@ namespace MohawkGame2D
                                 if (carRef1.direction == "down" && diff.Y - intersectionRef.height/2 <= carRef1.StopDistance() && diff.Y >= intersectionRef.height/2 && diff.Y > 0) {
                                     carRef1.Stop = true;
                                     break;
-                                } else if (carRef1.direction == "up" && diff.Y + intersectionRef.height/2 >= -carRef1.StopDistance() && diff.Y >= intersectionRef.height/2 && diff.Y < 0) {
+                                } else if (carRef1.direction == "up" && diff.Y + intersectionRef.height/2 >= -carRef1.StopDistance() && diff.Y <= -intersectionRef.height/2 && diff.Y < 0) {
                                     carRef1.Stop = true;
                                     break;
-                                } else if (carRef1.direction == "left" && diff.X + intersectionRef.width/2 >= -carRef1.StopDistance() && diff.X >= intersectionRef.width/2 && diff.X < 0) {
+                                } else if (carRef1.direction == "left" && diff.X + intersectionRef.width/2 >= -carRef1.StopDistance() && diff.X <= -intersectionRef.width/2 && diff.X < 0) {
                                     carRef1.Stop = true;
                                     break;
                                 } else if (carRef1.direction == "right" && diff.X - intersectionRef.width/2 <= carRef1.StopDistance() && diff.X >= intersectionRef.width/2 && diff.X > 0) {
